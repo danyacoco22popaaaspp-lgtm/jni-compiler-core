@@ -1,0 +1,33 @@
+name: JNI Build
+
+on:
+  push:
+    paths:
+      - input/**
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download NDKs
+      run: |
+        wget https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip
+        wget https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
+        wget https://dl.google.com/android/repository/android-ndk-r27-linux.zip
+
+        unzip android-ndk-r16b-linux-x86_64.zip -d /opt
+        unzip android-ndk-r25c-linux.zip -d /opt
+        unzip android-ndk-r27-linux.zip -d /opt
+
+    - name: Build JNI
+      run: bash build.sh
+
+    - name: Upload result
+      uses: actions/upload-artifact@v4
+      with:
+        name: so-libs
+        path: output/
